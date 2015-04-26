@@ -91,20 +91,21 @@ namespace Kühlschrankwächter
 
         private void gridViewColoring()
         {
-            dataGridView1.CurrentCell.Style.BackColor = Color.Gold;
-             switch (accessType)
+            foreach (DataGridViewRow row in this.dataGridView1.Rows)
             {
-                case 1:
-                    chkReadOnly.Checked = true;
-                    break;
-                case 2:
-                    chkModify.Checked = true;
-                    break;
+                foreach (DataGridViewCell cell in row.Cells)
+                {
+                    if (dataGridView1.CurrentCell.RowIndex == 0)
+                    {
+                        dataGridView1.CurrentCell.Style.BackColor = Color.Red;
+                    }
+                }
             }
+
+
+            
         }
-    }
-           
-        }
+ 
 
         private void buttonSave_Click(object sender, EventArgs e)
         {
