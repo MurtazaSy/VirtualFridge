@@ -10,11 +10,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Kühlschrankwächter
+namespace Kühlschrankwächter                        //Name der Funktion ist "Kühlschrankwächter"
 {
-    public partial class VirtualFridge : Form
+    public partial class VirtualFridge : Form               
     {
-        DateTimePicker dtpOrder;
+        DateTimePicker dtpOrder;                    
 
 
         public VirtualFridge()
@@ -23,14 +23,14 @@ namespace Kühlschrankwächter
         }
         void Clear_all()
         {
-            dataGridView1.Columns.Clear();
+            dataGridView1.Columns.Clear();      //Datagridview Spalte entleeren
         }
 
         void ReadXML(String file)
         {
             DataSet myDataSet = new DataSet();
             myDataSet.ReadXml(file);
-            dataGridView1.DataSource = myDataSet.Tables[0].DefaultView;
+            dataGridView1.DataSource = myDataSet.Tables[0].DefaultView;                 //XML wird gelesen
         }
 
 
@@ -39,25 +39,32 @@ namespace Kühlschrankwächter
             var dt = new DataTable();
             foreach (DataGridViewColumn column in dgv.Columns)
             {
-                if (column.Index == 0 && column.Visible)
+                if (column.Index == 0 && column.Visible)            //Spalte 1 ist Name
                 {
                     // You could potentially name the column based on the DGV column name (beware of dupes)
                     // or assign a type based on the data type of the data bound to this DGV column.
-                    dt.Columns.Add("Name");
+                    dt.Columns.Add("Name");                     //ADD Spalte Name
+                    //dataGridView1.Columns["Name"].Visible = false;
+                    //dataGridView1.Columns[0].Visible = false; 
                 }
+                
 
-                if (column.Index == 1 && column.Visible)
+                if (column.Index == 1 && column.Visible)               //Spalte 2 ist Ablaufsdatum (MHD)
                 {
                     // You could potentially name the column based on the DGV column name (beware of dupes)
                     // or assign a type based on the data type of the data bound to this DGV column.
-                    dt.Columns.Add("Ablaufdatum (MHD)");
+                    dt.Columns.Add("Ablaufdatum (MHD)");            //ADD Ablaufsdatum (MHD)
+
+                   // dataGridView1.Columns["Ablaufdatum (MHD)"].Visible = false;
+                    //dataGridView1.Columns[1].Visible = false; 
                 }
-            }
+                
+                           }
 
             object[] cellValues = new object[dgv.Columns.Count];
             foreach (DataGridViewRow row in dgv.Rows)
             {
-                for (int i = 0; i < row.Cells.Count; i++)
+                for (int i = 0; i < row.Cells.Count; i++)        
                 {
                     cellValues[i] = row.Cells[i].Value;
                 }
@@ -68,11 +75,10 @@ namespace Kühlschrankwächter
         }
         private void VirtualFridge_Load(object sender, EventArgs e)
         {
-            if (File.Exists("fridgeitems.xml"))
+            if (File.Exists("fridgeitems.xml"))                                     //fridgeitem wird gelesen
             {
-                Clear_all();
-                ReadXML("fridgeitems.xml");
-
+                Clear_all();                                        // entleeren
+                ReadXML("fridgeitems.xml");                         //  Readxml ausgelesen
             }
 
             gridViewColoring();
@@ -95,28 +101,36 @@ namespace Kühlschrankwächter
             {
                 foreach (DataGridViewCell cell in row.Cells)
                 {
-                    if (dataGridView1.CurrentCell.RowIndex == 0)
-                    {
-                        dataGridView1.CurrentCell.Style.BackColor = Color.Red;
-                    }
+                    int count = 0;
+                   // DateTime dateValue = (DateTime)dataGridView1.Rows[dataGridView1.SelectedRows[count].Index].Cells[1].Value;
+                    //double currentDate = (dateValue - DateTime.Today).TotalDays;
+                    
+                    //if (dataGridView1.CurrentCell.RowIndex == 0)
+                    
+                        //dataGridView1.CurrentCell.Style.BackColor = Color.Red;
+                        for (int i = 0; i < 7; i++)
+                        {
+                            
+                        }
+                       
+                    
+                    //this.dataGridView1.Sort(this.dataGridView1.Columns["Ablaufdatum (MHD)"], ListSortDirection.Ascending);
                 }
             }
 
 
-            
+
         }
- 
 
         private void buttonSave_Click(object sender, EventArgs e)
         {
-
-                DataTable dT = GetDataTableFromDGV(dataGridView1);
-                DataSet dS = new DataSet();
-                dS.Tables.Add(dT);
-                File.Delete("fridgeitems.xml");
+            DataTable dT = GetDataTableFromDGV(dataGridView1);                      
+            DataSet dS = new DataSet();
+            dS.Tables.Add(dT);
+            File.Delete("fridgeitems.xml");
+           
                 dS.WriteXml(File.OpenWrite("fridgeitems.xml"));
-                MessageBox.Show("Daten gespeichert.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
+            MessageBox.Show("Daten gespeichert.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
@@ -124,12 +138,12 @@ namespace Kühlschrankwächter
 
 
         }
-       
+
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            
-            
+
+
 
         }
 
@@ -161,11 +175,11 @@ namespace Kühlschrankwächter
                 }
             }
             catch (Exception ex)
-            { 
+            {
                 //MessageBox.Show(ex.Message); 
             }
         }
-       
+
         private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             try
@@ -176,7 +190,7 @@ namespace Kühlschrankwächter
                 }
             }
             catch (Exception ex)
-            { 
+            {
                 //MessageBox.Show(ex.Message); 
             }
         }
@@ -192,9 +206,14 @@ namespace Kühlschrankwächter
 
         private void schließenToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.Close();
+            this.Close();                           //Schließen den Programm
         }
 
+        private void suchenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+          
+        }
     }
 }
 
