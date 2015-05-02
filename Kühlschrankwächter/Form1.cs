@@ -93,8 +93,9 @@ namespace Kühlschrankwächter                        //Name der Funktion ist "K
             dtpOrder.ValueChanged += this.dtpOrder_ValueChanged;
             dataGridView1.CellBeginEdit += this.dataGridView1_CellBeginEdit;
             dataGridView1.CellEndEdit += this.dataGridView1_CellEndEdit;
-        }
 
+         
+                    }
         private void gridViewColoring()
         {
             foreach (DataGridViewRow row in this.dataGridView1.Rows)
@@ -107,7 +108,7 @@ namespace Kühlschrankwächter                        //Name der Funktion ist "K
                     
                     //if (dataGridView1.CurrentCell.RowIndex == 0)
                     
-                        //dataGridView1.CurrentCell.Style.BackColor = Color.Red;
+                        dataGridView1.CurrentCell.Style.BackColor = Color.Red;
                         for (int i = 0; i < 7; i++)
                         {
                             
@@ -117,9 +118,6 @@ namespace Kühlschrankwächter                        //Name der Funktion ist "K
                     //this.dataGridView1.Sort(this.dataGridView1.Columns["Ablaufdatum (MHD)"], ListSortDirection.Ascending);
                 }
             }
-
-
-
         }
 
         private void buttonSave_Click(object sender, EventArgs e)
@@ -206,14 +204,36 @@ namespace Kühlschrankwächter                        //Name der Funktion ist "K
 
         private void schließenToolStripMenuItem_Click(object sender, EventArgs e)
         {
+           
             this.Close();                           //Schließen den Programm
         }
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            e.Cancel = true;
+        }
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
 
+            if (e.CloseReason == CloseReason.WindowsShutDown) return;
+
+            switch (MessageBox.Show(this, "Soll das Fenster geschlossen werden?", "Schließen", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
+            {
+                case DialogResult.No:
+                    e.Cancel = true;
+                    break;
+                default:
+                    break;
+            }
+        }
+       
+        
         private void suchenToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
           
         }
+       
     }
 }
 
