@@ -106,10 +106,12 @@ namespace Kühlschrankwächter                        //Name der Funktion ist "K
                    // DateTime dateValue = (DateTime)dataGridView1.Rows[dataGridView1.SelectedRows[count].Index].Cells[1].Value;
                     //double currentDate = (dateValue - DateTime.Today).TotalDays;
                     
-                    //if (dataGridView1.CurrentCell.RowIndex == 0)
+                    if (dataGridView1.CurrentCell.RowIndex == 0)
                     
                         dataGridView1.CurrentCell.Style.BackColor = Color.Red;
-                        for (int i = 0; i < 7; i++)
+                        //dataGridView1.CurrentCell.Style.BackColor = Color.green;
+
+                                for (int i = 0; i < 7; i++)
                         {
                             
                         }
@@ -232,6 +234,38 @@ namespace Kühlschrankwächter                        //Name der Funktion ist "K
         {
 
           
+        }
+
+        private void toolStripComboBox1_Click(object sender, EventArgs e)
+        {
+            string date;
+            dtpOrder = new DateTimePicker();
+           if(toolStripComboBox1.SelectedIndex==1){
+
+               for (int rows = 0; rows < dataGridView1.Rows.Count; rows++)
+               {
+                   for (int col = 0; col < dataGridView1.Rows[rows].Cells.Count; col++)
+                   {
+                       date = dataGridView1.Rows[rows].Cells[1].Value.ToString();
+           
+
+                     DateTime time = DateTime.Parse(date);
+                      
+
+                   int result = DateTime.Compare(time, DateTime.Now);
+
+                    if (result == 0)
+                    {
+                        dataGridView1.Rows[rows].Cells[1].Style.BackColor=Color.Red;
+                    }
+
+                   }
+               } 
+              
+               //dataGridView1.Columns.Clear();   
+
+           }
+               
         }
        
     }
