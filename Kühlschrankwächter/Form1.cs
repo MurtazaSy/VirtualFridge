@@ -256,7 +256,7 @@ namespace Kühlschrankwächter                        //Name der Funktion ist "K
 
                     if (result == 0)
                     {
-                        dataGridView1.Rows[rows].Cells[1].Style.BackColor=Color.Red;
+                        dataGridView1.Rows[rows].Cells[1].Style.BackColor=Color.Black;
                     }
 
                    }
