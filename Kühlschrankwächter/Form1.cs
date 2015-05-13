@@ -9,13 +9,14 @@ using System.Xml;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Net.Mail;
 
 namespace Kühlschrankwächter                        //Name der Funktion ist "Kühlschrankwächter"
 {
-    public partial class VirtualFridge : Form               
+    public partial class VirtualFridge : Form
     {
-        DateTimePicker dtpOrder;                    
-
+        DateTimePicker dtpOrder;
+        Einstellungen settingsWindow;
 
         public VirtualFridge()
         {
@@ -23,6 +24,8 @@ namespace Kühlschrankwächter                        //Name der Funktion ist "K
         }
         void Clear_all()
         {
+            dataGridView1.Rows.Clear();
+            dataGridView1.Refresh();
             dataGridView1.Columns.Clear();      //Datagridview Spalte entleeren
         }
 
@@ -31,6 +34,7 @@ namespace Kühlschrankwächter                        //Name der Funktion ist "K
             DataSet myDataSet = new DataSet();
             myDataSet.ReadXml(file);
             dataGridView1.DataSource = myDataSet.Tables[0].DefaultView;                 //XML wird gelesen
+
         }
 
 
@@ -47,7 +51,7 @@ namespace Kühlschrankwächter                        //Name der Funktion ist "K
                     //dataGridView1.Columns["Name"].Visible = false;
                     //dataGridView1.Columns[0].Visible = false; 
                 }
-                
+
 
                 if (column.Index == 1 && column.Visible)               //Spalte 2 ist Ablaufsdatum (MHD)
                 {
@@ -55,16 +59,16 @@ namespace Kühlschrankwächter                        //Name der Funktion ist "K
                     // or assign a type based on the data type of the data bound to this DGV column.
                     dt.Columns.Add("Ablaufdatum (MHD)");            //ADD Ablaufsdatum (MHD)
 
-                   // dataGridView1.Columns["Ablaufdatum (MHD)"].Visible = false;
+                    // dataGridView1.Columns["Ablaufdatum (MHD)"].Visible = false;
                     //dataGridView1.Columns[1].Visible = false; 
                 }
-                
-                           }
+
+            }
 
             object[] cellValues = new object[dgv.Columns.Count];
             foreach (DataGridViewRow row in dgv.Rows)
             {
-                for (int i = 0; i < row.Cells.Count; i++)        
+                for (int i = 0; i < row.Cells.Count; i++)
                 {
                     cellValues[i] = row.Cells[i].Value;
                 }
@@ -75,6 +79,7 @@ namespace Kühlschrankwächter                        //Name der Funktion ist "K
         }
         private void VirtualFridge_Load(object sender, EventArgs e)
         {
+            sendEmailToUser();
             if (File.Exists("fridgeitems.xml"))                                     //fridgeitem wird gelesen
             {
                 Clear_all();                                        // entleeren
@@ -94,43 +99,56 @@ namespace Kühlschrankwächter                        //Name der Funktion ist "K
             dataGridView1.CellBeginEdit += this.dataGridView1_CellBeginEdit;
             dataGridView1.CellEndEdit += this.dataGridView1_CellEndEdit;
 
-         
-                    }
+
+        }
         private void gridViewColoring()
         {
-            foreach (DataGridViewRow row in this.dataGridView1.Rows)
+            foreach (DataGridViewRow dr in dataGridView1.Rows)
             {
-                foreach (DataGridViewCell cell in row.Cells)
+                object cellvalue = dr.Cells["Ablaufdatum (MHD)"].Value;
+                int cell = Convert.ToString(cellvalue).Length;
+                if (cell > 0)
                 {
-                    int count = 0;
-                   // DateTime dateValue = (DateTime)dataGridView1.Rows[dataGridView1.SelectedRows[count].Index].Cells[1].Value;
-                    //double currentDate = (dateValue - DateTime.Today).TotalDays;
-                    
-                    if (dataGridView1.CurrentCell.RowIndex == 0)
-                    
-                        dataGridView1.CurrentCell.Style.BackColor = Color.Red;
-                        //dataGridView1.CurrentCell.Style.BackColor = Color.green;
+                    DateTime datetime = DateTime.Parse(dr.Cells["Ablaufdatum (MHD)"].Value.ToString());
+                    int result = DateTime.Compare(datetime, DateTime.Now);
+                    int daysdifference = (datetime - DateTime.Now).Days;
 
-                                for (int i = 0; i < 7; i++)
-                        {
-                            
-                        }
-                       
-                    
-                    //this.dataGridView1.Sort(this.dataGridView1.Columns["Ablaufdatum (MHD)"], ListSortDirection.Ascending);
+                    if (result > 0 && daysdifference > 7)
+                    {
+
+                        dr.Cells["Name"].Style.BackColor = Color.LimeGreen;
+                        dr.Cells["Ablaufdatum (MHD)"].Style.BackColor = Color.LimeGreen;
+                    }
+                    else if (result > 0 && daysdifference >= 3 && daysdifference <= 7)
+                    {
+                        dr.Cells["Name"].Style.BackColor = Color.Yellow;
+                        dr.Cells["Ablaufdatum (MHD)"].Style.BackColor = Color.Yellow;
+                    }
+                    else if (result > 0 && daysdifference < 3 && daysdifference >= 0)
+                    {
+                        dr.Cells["Name"].Style.BackColor = Color.Red;
+                        dr.Cells["Ablaufdatum (MHD)"].Style.BackColor = Color.Red;
+                    }
+                    else if (result < 0 && daysdifference < 0)
+                    {
+                        dr.Cells["Name"].Style.BackColor = Color.SandyBrown;
+                        dr.Cells["Ablaufdatum (MHD)"].Style.BackColor = Color.SandyBrown;
+                    }
                 }
             }
         }
 
         private void buttonSave_Click(object sender, EventArgs e)
         {
-            DataTable dT = GetDataTableFromDGV(dataGridView1);                      
+            ShowAllEntries();
+            DataTable dT = GetDataTableFromDGV(dataGridView1);
             DataSet dS = new DataSet();
             dS.Tables.Add(dT);
             File.Delete("fridgeitems.xml");
-           
-                dS.WriteXml(File.OpenWrite("fridgeitems.xml"));
+
+            dS.WriteXml(File.OpenWrite("fridgeitems.xml"));
             MessageBox.Show("Daten gespeichert.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            gridViewColoring();
         }
 
         private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
@@ -142,7 +160,8 @@ namespace Kühlschrankwächter                        //Name der Funktion ist "K
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-
+            gridViewColoring();
+            
 
 
         }
@@ -206,7 +225,7 @@ namespace Kühlschrankwächter                        //Name der Funktion ist "K
 
         private void schließenToolStripMenuItem_Click(object sender, EventArgs e)
         {
-           
+
             this.Close();                           //Schließen den Programm
         }
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -228,47 +247,195 @@ namespace Kühlschrankwächter                        //Name der Funktion ist "K
                     break;
             }
         }
-       
-        
+
+
         private void suchenToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
-          
+
         }
 
         private void toolStripComboBox1_Click(object sender, EventArgs e)
         {
             string date;
             dtpOrder = new DateTimePicker();
-           if(toolStripComboBox1.SelectedIndex==1){
-
-               for (int rows = 0; rows < dataGridView1.Rows.Count; rows++)
-               {
-                   for (int col = 0; col < dataGridView1.Rows[rows].Cells.Count; col++)
-                   {
-                       date = dataGridView1.Rows[rows].Cells[1].Value.ToString();
-           
-
-                     DateTime time = DateTime.Parse(date);
-                      
-
-                   int result = DateTime.Compare(time, DateTime.Now);
-
-                    if (result == 0)
+            int comboboxindex = toolStripComboBox1.SelectedIndex;
+            switch (comboboxindex)
+            {
+                case 0:
                     {
-                        dataGridView1.Rows[rows].Cells[1].Style.BackColor=Color.Black;
+                        ShowAllEntries();
+                    }
+                    break;
+                case 1:
+                    {
+                        ShowAllEntries();
+                        foreach (DataGridViewRow dr in dataGridView1.Rows)
+                        {
+                            object cellvalue = dr.Cells["Ablaufdatum (MHD)"].Value;
+                            int cell = Convert.ToString(cellvalue).Length;
+                            if (cell > 0)
+                            {
+                                DateTime datetime = DateTime.Parse(dr.Cells["Ablaufdatum (MHD)"].Value.ToString());
+                                int result = DateTime.Compare(datetime, DateTime.Now);
+                                int daysdifference = (datetime - DateTime.Now).Days;
+                                if (daysdifference < 7)
+                                {
+                                    CurrencyManager currencyManager1 = (CurrencyManager)dataGridView1.BindingContext[dataGridView1.DataSource];
+
+                                    currencyManager1.SuspendBinding();
+                                    dr.Visible = false;
+                                    currencyManager1.ResumeBinding();
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case 2:
+                    {
+                        ShowAllEntries();
+                        foreach (DataGridViewRow dr in dataGridView1.Rows)
+                        {
+                            object cellvalue = dr.Cells["Ablaufdatum (MHD)"].Value;
+                            int cell = Convert.ToString(cellvalue).Length;
+                            if (cell > 0)
+                            {
+                                DateTime datetime = DateTime.Parse(dr.Cells["Ablaufdatum (MHD)"].Value.ToString());
+                                int result = DateTime.Compare(datetime, DateTime.Now);
+                                int daysdifference = (datetime - DateTime.Now).Days;
+                                if ((daysdifference < 3 || daysdifference > 7))
+                                {
+                                    CurrencyManager currencyManager1 = (CurrencyManager)dataGridView1.BindingContext[dataGridView1.DataSource];
+
+                                    currencyManager1.SuspendBinding();
+                                    dr.Visible = false;
+                                    currencyManager1.ResumeBinding();
+                                }
+                            }
+                        }
                     }
 
-                   }
-               } 
-              
-               //dataGridView1.Columns.Clear();   
+                    break;
+                case 3:
+                    {
+                        ShowAllEntries();
+                        foreach (DataGridViewRow dr in dataGridView1.Rows)
+                        {
+                            object cellvalue = dr.Cells["Ablaufdatum (MHD)"].Value;
+                            int cell = Convert.ToString(cellvalue).Length;
+                            if (cell > 0)
+                            {
+                                DateTime datetime = DateTime.Parse(dr.Cells["Ablaufdatum (MHD)"].Value.ToString());
+                                int result = DateTime.Compare(datetime, DateTime.Now);
+                                int daysdifference = (datetime - DateTime.Now).Days;
+                                if (daysdifference >= 3 || daysdifference < 0)
+                                {
+                                    CurrencyManager currencyManager1 = (CurrencyManager)dataGridView1.BindingContext[dataGridView1.DataSource];
 
-           }
-               
+                                    currencyManager1.SuspendBinding();
+                                    dr.Visible = false;
+                                    currencyManager1.ResumeBinding();
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case 4:
+                    {
+                        ShowAllEntries();
+                        foreach (DataGridViewRow dr in dataGridView1.Rows)
+                        {
+                            object cellvalue = dr.Cells["Ablaufdatum (MHD)"].Value;
+                            int cell = Convert.ToString(cellvalue).Length;
+                            if (cell > 0)
+                            {
+                                DateTime datetime = DateTime.Parse(dr.Cells["Ablaufdatum (MHD)"].Value.ToString());
+                                int result = DateTime.Compare(datetime, DateTime.Now);
+                                int daysdifference = (datetime - DateTime.Now).Days;
+                                if (daysdifference >= 0)
+                                {
+                                    CurrencyManager currencyManager1 = (CurrencyManager)dataGridView1.BindingContext[dataGridView1.DataSource];
+
+                                    currencyManager1.SuspendBinding();
+                                    dr.Visible = false;
+                                    currencyManager1.ResumeBinding();
+                                }
+                            }
+
+
+                        }
+                    }
+                    break;
+                default:
+                    {
+                        //TODO: Default Action.
+                    }
+                    break;
+            }
         }
-       
+
+        private void ShowAllEntries()
+        {
+            foreach (DataGridViewRow dr in dataGridView1.Rows)
+            {
+                object cellvalue = dr.Cells["Ablaufdatum (MHD)"].Value;
+                int cell = Convert.ToString(cellvalue).Length;
+                if (cell > 0)
+                {
+                    dr.Visible = true;
+                }
+            }
+        }
+
+        private void toolStripTextBoxSuchen_Click(object sender, EventArgs e)
+        {
+            ShowAllEntries();
+            string searchText = toolStripTextBoxSuchen.Text;
+            foreach (DataGridViewRow dr in dataGridView1.Rows)
+            {
+                object cellvalue = dr.Cells["Name"].Value;
+                string cellText = Convert.ToString(cellvalue);
+                int cell = Convert.ToString(cellvalue).Length;
+                int compareStrings = String.Compare(searchText, cellText, true);
+                if (cell > 0 && searchText.Length > 0)
+                {
+                    if (compareStrings < 0 || compareStrings > 0)
+                    {
+                        CurrencyManager currencyManager1 = (CurrencyManager)dataGridView1.BindingContext[dataGridView1.DataSource];
+                        currencyManager1.SuspendBinding();
+                        dr.Visible = false;
+                        currencyManager1.ResumeBinding();
+                    }
+                }
+            }
+        }
+
+        private void einstellungenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            settingsWindow = new Einstellungen();
+            settingsWindow.Show();
+        }
+
+        private void sendEmailToUser()
+        {
+            //MailMessage mail = new MailMessage();
+            //SmtpClient SmtpServer = new SmtpClient("smtp.live.com");
+
+            //mail.From = new MailAddress("murtaza.s@hotmail.de");
+            //mail.To.Add("to_adresse");
+            //mail.Subject = "Test Mail";
+            //mail.Body = "This is for testing SMTP mail from GMAIL";
+
+            //SmtpServer.Port = 587;
+            //SmtpServer.Credentials = new System.Net.NetworkCredential("murtaza.s@live.de", "password");
+            //SmtpServer.EnableSsl = true;
+
+            //SmtpServer.Send(mail);
+            //MessageBox.Show("mail Send");
+        }
+
     }
 }
+
 
 
