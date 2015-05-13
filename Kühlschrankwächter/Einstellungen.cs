@@ -33,6 +33,7 @@ namespace Kühlschrankwächter
                 writer.WriteEndElement();
 
                 writer.WriteEndDocument();
+                MessageBox.Show("Daten gespeichert.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
