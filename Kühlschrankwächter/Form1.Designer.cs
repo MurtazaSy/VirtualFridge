@@ -32,33 +32,34 @@
             this.buttonSave = new System.Windows.Forms.Button();
             this.buttonSearchreci = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.neuerKühlschrankToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.kühlschrankÖffnenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.schließenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.anzeigeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripComboBox1 = new System.Windows.Forms.ToolStripComboBox();
             this.suchenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripTextBoxSuchen = new System.Windows.Forms.ToolStripTextBox();
-            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.groupColorcode = new System.Windows.Forms.GroupBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.kühlschrankÖffnenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.einstellungenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hilfeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.farbcodierungToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rezepteSuchenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.überVirtualFridgeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.checkedListBoxProducts = new System.Windows.Forms.CheckedListBox();
+            this.labelProduktechecklist = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.menuStrip1.SuspendLayout();
-            this.groupColorcode.SuspendLayout();
             this.SuspendLayout();
             // 
             // buttonSave
             // 
             this.buttonSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonSave.Location = new System.Drawing.Point(12, 370);
+            this.buttonSave.Location = new System.Drawing.Point(12, 357);
             this.buttonSave.Name = "buttonSave";
-            this.buttonSave.Size = new System.Drawing.Size(113, 39);
+            this.buttonSave.Size = new System.Drawing.Size(248, 39);
             this.buttonSave.TabIndex = 1;
             this.buttonSave.Text = "Speichern";
             this.buttonSave.UseVisualStyleBackColor = true;
@@ -66,13 +67,14 @@
             // 
             // buttonSearchreci
             // 
-            this.buttonSearchreci.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonSearchreci.Location = new System.Drawing.Point(131, 370);
+            this.buttonSearchreci.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonSearchreci.Location = new System.Drawing.Point(470, 357);
             this.buttonSearchreci.Name = "buttonSearchreci";
-            this.buttonSearchreci.Size = new System.Drawing.Size(113, 39);
+            this.buttonSearchreci.Size = new System.Drawing.Size(247, 39);
             this.buttonSearchreci.TabIndex = 4;
-            this.buttonSearchreci.Text = "Rezept suchen";
+            this.buttonSearchreci.Text = "Rezepte suchen";
             this.buttonSearchreci.UseVisualStyleBackColor = true;
+            this.buttonSearchreci.Click += new System.EventHandler(this.buttonSearchreci_Click_1);
             // 
             // dataGridView1
             // 
@@ -86,9 +88,22 @@
             this.Column2});
             this.dataGridView1.Location = new System.Drawing.Point(12, 27);
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(480, 327);
+            this.dataGridView1.Size = new System.Drawing.Size(452, 324);
             this.dataGridView1.TabIndex = 5;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
+            // 
+            // Column1
+            // 
+            this.Column1.HeaderText = "Name";
+            this.Column1.Name = "Column1";
+            this.Column1.Width = 200;
+            // 
+            // Column2
+            // 
+            this.Column2.HeaderText = "Ablaufdatum (MHD)";
+            this.Column2.Name = "Column2";
+            this.Column2.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.Column2.Width = 200;
             // 
             // menuStrip1
             // 
@@ -96,24 +111,44 @@
             this.toolStripMenuItem1,
             this.anzeigeToolStripMenuItem,
             this.suchenToolStripMenuItem,
-            this.einstellungenToolStripMenuItem});
+            this.einstellungenToolStripMenuItem,
+            this.hilfeToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(504, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(722, 24);
             this.menuStrip1.TabIndex = 6;
             this.menuStrip1.Text = "menuStrip1";
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.neuerKühlschrankToolStripMenuItem,
             this.kühlschrankÖffnenToolStripMenuItem,
             this.schließenToolStripMenuItem});
+            this.toolStripMenuItem1.Image = global::Kühlschrankwächter.Properties.Resources.menu_alt_512;
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(50, 20);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(66, 20);
             this.toolStripMenuItem1.Text = "Menü";
+            // 
+            // neuerKühlschrankToolStripMenuItem
+            // 
+            this.neuerKühlschrankToolStripMenuItem.Image = global::Kühlschrankwächter.Properties.Resources.New_File_256;
+            this.neuerKühlschrankToolStripMenuItem.Name = "neuerKühlschrankToolStripMenuItem";
+            this.neuerKühlschrankToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.neuerKühlschrankToolStripMenuItem.Text = "Neuer Kühlschrank";
+            this.neuerKühlschrankToolStripMenuItem.Click += new System.EventHandler(this.neuerKühlschrankToolStripMenuItem_Click);
+            // 
+            // kühlschrankÖffnenToolStripMenuItem
+            // 
+            this.kühlschrankÖffnenToolStripMenuItem.Image = global::Kühlschrankwächter.Properties.Resources.folder;
+            this.kühlschrankÖffnenToolStripMenuItem.Name = "kühlschrankÖffnenToolStripMenuItem";
+            this.kühlschrankÖffnenToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.kühlschrankÖffnenToolStripMenuItem.Text = "Kühlschrank öffnen";
+            this.kühlschrankÖffnenToolStripMenuItem.Click += new System.EventHandler(this.kühlschrankÖffnenToolStripMenuItem_Click);
             // 
             // schließenToolStripMenuItem
             // 
+            this.schließenToolStripMenuItem.Image = global::Kühlschrankwächter.Properties.Resources.button_cancel;
             this.schließenToolStripMenuItem.Name = "schließenToolStripMenuItem";
             this.schließenToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
             this.schließenToolStripMenuItem.Text = "Kühlschrank schließen";
@@ -123,8 +158,9 @@
             // 
             this.anzeigeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripComboBox1});
+            this.anzeigeToolStripMenuItem.Image = global::Kühlschrankwächter.Properties.Resources.filter;
             this.anzeigeToolStripMenuItem.Name = "anzeigeToolStripMenuItem";
-            this.anzeigeToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+            this.anzeigeToolStripMenuItem.Size = new System.Drawing.Size(77, 20);
             this.anzeigeToolStripMenuItem.Text = "Anzeige";
             // 
             // toolStripComboBox1
@@ -143,8 +179,9 @@
             // 
             this.suchenToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripTextBoxSuchen});
+            this.suchenToolStripMenuItem.Image = global::Kühlschrankwächter.Properties.Resources._229;
             this.suchenToolStripMenuItem.Name = "suchenToolStripMenuItem";
-            this.suchenToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
+            this.suchenToolStripMenuItem.Size = new System.Drawing.Size(74, 20);
             this.suchenToolStripMenuItem.Text = "Suchen";
             this.suchenToolStripMenuItem.Click += new System.EventHandler(this.suchenToolStripMenuItem_Click);
             // 
@@ -156,84 +193,66 @@
             this.toolStripTextBoxSuchen.ToolTipText = "Produktnamen eingeben";
             this.toolStripTextBoxSuchen.Click += new System.EventHandler(this.toolStripTextBoxSuchen_Click);
             // 
-            // Column1
-            // 
-            this.Column1.HeaderText = "Name";
-            this.Column1.Name = "Column1";
-            this.Column1.Width = 200;
-            // 
-            // Column2
-            // 
-            this.Column2.HeaderText = "Ablaufdatum (MHD)";
-            this.Column2.Name = "Column2";
-            this.Column2.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.Column2.Width = 200;
-            // 
-            // groupColorcode
-            // 
-            this.groupColorcode.Controls.Add(this.label4);
-            this.groupColorcode.Controls.Add(this.label3);
-            this.groupColorcode.Controls.Add(this.label2);
-            this.groupColorcode.Controls.Add(this.label1);
-            this.groupColorcode.Location = new System.Drawing.Point(294, 360);
-            this.groupColorcode.Name = "groupColorcode";
-            this.groupColorcode.Size = new System.Drawing.Size(198, 56);
-            this.groupColorcode.TabIndex = 7;
-            this.groupColorcode.TabStop = false;
-            this.groupColorcode.Text = "Farbcodierung";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.BackColor = System.Drawing.Color.YellowGreen;
-            this.label1.Location = new System.Drawing.Point(6, 16);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(30, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Grün";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.BackColor = System.Drawing.Color.Red;
-            this.label2.Location = new System.Drawing.Point(57, 16);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(24, 13);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "Rot";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.BackColor = System.Drawing.Color.Yellow;
-            this.label3.Location = new System.Drawing.Point(100, 16);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(29, 13);
-            this.label3.TabIndex = 2;
-            this.label3.Text = "Gelb";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.BackColor = System.Drawing.Color.Chocolate;
-            this.label4.Location = new System.Drawing.Point(135, 16);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(35, 13);
-            this.label4.TabIndex = 3;
-            this.label4.Text = "Braun";
-            // 
-            // kühlschrankÖffnenToolStripMenuItem
-            // 
-            this.kühlschrankÖffnenToolStripMenuItem.Name = "kühlschrankÖffnenToolStripMenuItem";
-            this.kühlschrankÖffnenToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
-            this.kühlschrankÖffnenToolStripMenuItem.Text = "Kühlschrank öffnen";
-            // 
             // einstellungenToolStripMenuItem
             // 
+            this.einstellungenToolStripMenuItem.Image = global::Kühlschrankwächter.Properties.Resources.application_x_desktop;
             this.einstellungenToolStripMenuItem.Name = "einstellungenToolStripMenuItem";
-            this.einstellungenToolStripMenuItem.Size = new System.Drawing.Size(90, 20);
+            this.einstellungenToolStripMenuItem.Size = new System.Drawing.Size(106, 20);
             this.einstellungenToolStripMenuItem.Text = "Einstellungen";
             this.einstellungenToolStripMenuItem.Click += new System.EventHandler(this.einstellungenToolStripMenuItem_Click);
+            // 
+            // hilfeToolStripMenuItem
+            // 
+            this.hilfeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.farbcodierungToolStripMenuItem,
+            this.rezepteSuchenToolStripMenuItem,
+            this.überVirtualFridgeToolStripMenuItem});
+            this.hilfeToolStripMenuItem.Image = global::Kühlschrankwächter.Properties.Resources._512;
+            this.hilfeToolStripMenuItem.Name = "hilfeToolStripMenuItem";
+            this.hilfeToolStripMenuItem.Size = new System.Drawing.Size(60, 20);
+            this.hilfeToolStripMenuItem.Text = "Hilfe";
+            // 
+            // farbcodierungToolStripMenuItem
+            // 
+            this.farbcodierungToolStripMenuItem.Name = "farbcodierungToolStripMenuItem";
+            this.farbcodierungToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.farbcodierungToolStripMenuItem.Text = "Farbcodierung";
+            this.farbcodierungToolStripMenuItem.Click += new System.EventHandler(this.farbcodierungToolStripMenuItem_Click);
+            // 
+            // rezepteSuchenToolStripMenuItem
+            // 
+            this.rezepteSuchenToolStripMenuItem.Name = "rezepteSuchenToolStripMenuItem";
+            this.rezepteSuchenToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.rezepteSuchenToolStripMenuItem.Text = "Rezepte suchen";
+            this.rezepteSuchenToolStripMenuItem.Click += new System.EventHandler(this.rezepteSuchenToolStripMenuItem_Click);
+            // 
+            // überVirtualFridgeToolStripMenuItem
+            // 
+            this.überVirtualFridgeToolStripMenuItem.Name = "überVirtualFridgeToolStripMenuItem";
+            this.überVirtualFridgeToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.überVirtualFridgeToolStripMenuItem.Text = "Über Virtual Fridge";
+            this.überVirtualFridgeToolStripMenuItem.Click += new System.EventHandler(this.überVirtualFridgeToolStripMenuItem_Click);
+            // 
+            // checkedListBoxProducts
+            // 
+            this.checkedListBoxProducts.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.checkedListBoxProducts.FormattingEnabled = true;
+            this.checkedListBoxProducts.Location = new System.Drawing.Point(470, 47);
+            this.checkedListBoxProducts.Name = "checkedListBoxProducts";
+            this.checkedListBoxProducts.Size = new System.Drawing.Size(247, 304);
+            this.checkedListBoxProducts.TabIndex = 8;
+            this.checkedListBoxProducts.SelectedIndexChanged += new System.EventHandler(this.checkedListBoxProducts_SelectedIndexChanged);
+            // 
+            // labelProduktechecklist
+            // 
+            this.labelProduktechecklist.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelProduktechecklist.AutoSize = true;
+            this.labelProduktechecklist.Location = new System.Drawing.Point(471, 28);
+            this.labelProduktechecklist.Name = "labelProduktechecklist";
+            this.labelProduktechecklist.Size = new System.Drawing.Size(189, 13);
+            this.labelProduktechecklist.TabIndex = 9;
+            this.labelProduktechecklist.Text = "Vorhandene Produkte im Kühlschrank:";
             // 
             // VirtualFridge
             // 
@@ -241,8 +260,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
-            this.ClientSize = new System.Drawing.Size(504, 438);
-            this.Controls.Add(this.groupColorcode);
+            this.ClientSize = new System.Drawing.Size(722, 435);
+            this.Controls.Add(this.labelProduktechecklist);
+            this.Controls.Add(this.checkedListBoxProducts);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.buttonSearchreci);
             this.Controls.Add(this.buttonSave);
@@ -255,8 +275,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            this.groupColorcode.ResumeLayout(false);
-            this.groupColorcode.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -276,13 +294,15 @@
         private System.Windows.Forms.ToolStripTextBox toolStripTextBoxSuchen;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
-        private System.Windows.Forms.GroupBox groupColorcode;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ToolStripMenuItem kühlschrankÖffnenToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem einstellungenToolStripMenuItem;
+        private System.Windows.Forms.CheckedListBox checkedListBoxProducts;
+        private System.Windows.Forms.ToolStripMenuItem hilfeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem farbcodierungToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem rezepteSuchenToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem überVirtualFridgeToolStripMenuItem;
+        private System.Windows.Forms.Label labelProduktechecklist;
+        private System.Windows.Forms.ToolStripMenuItem neuerKühlschrankToolStripMenuItem;
     }
 }
 

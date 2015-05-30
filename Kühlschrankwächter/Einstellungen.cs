@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
+using System.Text;
 
 namespace Kühlschrankwächter
 {
@@ -17,6 +18,7 @@ namespace Kühlschrankwächter
         public Einstellungen()
         {
             InitializeComponent();
+            //textboxpassword.PasswordChar = '*';
         }
 
         private void buttonUserDataSave_Click(object sender, EventArgs e)
@@ -65,6 +67,11 @@ namespace Kühlschrankwächter
                     }
                 }
             }
+        }
+
+        private void password_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

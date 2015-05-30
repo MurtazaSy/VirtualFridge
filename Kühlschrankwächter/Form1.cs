@@ -5,30 +5,55 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Xml;
+using System.Xml;                                    //Library for xml file
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Net.Mail;
+using System.Web;
+using System.Net.Mail;                      //Libaray for email
+
+using System.Diagnostics;                   //Um eine Webseite im Standardbrowser des Benutzers öffnen zu lassen
 
 namespace Kühlschrankwächter                        //Name der Funktion ist "Kühlschrankwächter"
 {
+    /// <summary>
+    /// In Klasse VirtualFridge werden mehrere klassen mit ein Objekt zugeweisen   
+    /// Es wird 2 Variablen erstellt. Diesen variablen haben den string als Datentyp
+    /// </summary>
     public partial class VirtualFridge : Form
     {
         DateTimePicker dtpOrder;
         Einstellungen settingsWindow;
-
+        string savefilepath, openfilepath;
+        Über_VirtualFridge infoWindow;
+        Farbcodierung ColourWindow;
+        Rezept Rezeptwindow;
+        
         public VirtualFridge()
         {
             InitializeComponent();
+            //password.PasswordChar = '*';
+            
         }
+        /// <summary>
+        /// hier werden Zeile entleert von Datengridview
+        /// dann wird Datagridview aktualisieren
+        /// als letzte wird Spalte entleert in Datagridview
+        /// </summary>
         void Clear_all()
         {
+            checkedListBoxProducts.Items.Clear();
+            dataGridView1.DataSource = null;
             dataGridView1.Rows.Clear();
             dataGridView1.Refresh();
             dataGridView1.Columns.Clear();      //Datagridview Spalte entleeren
         }
-
+        /// <summary>
+        /// hier wird eine Dataset erzeugt
+        /// dataset lese von xml datei
+        /// 
+        /// </summary>
+        /// <param name="file"></param>
         void ReadXML(String file)
         {
             DataSet myDataSet = new DataSet();
@@ -37,7 +62,14 @@ namespace Kühlschrankwächter                        //Name der Funktion ist "K
 
         }
 
-
+        /// <summary>
+        /// es werden Tabellen erstellt in Datagridview
+        /// In datagridview gibt zwei Spalten
+        /// 1 spalte ist Name
+        /// 2 Spalte ist Ablaufsdatum
+        /// </summary>
+        /// <param name="dgv"></param>
+        /// <returns>Ein DataTable mit den Werten für DataGridView</returns>
         private DataTable GetDataTableFromDGV(DataGridView dgv)
         {
             var dt = new DataTable();
@@ -77,30 +109,51 @@ namespace Kühlschrankwächter                        //Name der Funktion ist "K
 
             return dt;
         }
+        /// <summary>
+        /// Hier wird ein Messagebox öffen und fragt ob sie vorhandene kühlschrank öffnen. Wenn sie auf Ja klicken öffnen sich ein Fenster sie wählen eine xml datei
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void VirtualFridge_Load(object sender, EventArgs e)
         {
             sendEmailToUser();
-            if (File.Exists("fridgeitems.xml"))                                     //fridgeitem wird gelesen
+            DialogResult dlgresult = MessageBox.Show("Möchten Sie einen vorhandenen Kühlschrank öffnen?", "Wilkommen", MessageBoxButtons.YesNo, MessageBoxIcon.Question);       //Show the message in the messbox with messageboxicon
+            if (dlgresult == DialogResult.Yes)
             {
-                Clear_all();                                        // entleeren
-                ReadXML("fridgeitems.xml");                         //  Readxml ausgelesen
+                OpenFridge(this);
+
+                if (File.Exists("fridgeitems.xml"))                                     //fridgeitem wird gelesen
+                {
+                    Clear_all();                                        // entleeren
+                    ReadXML("fridgeitems.xml");                         //  Readxml ausgelesen
+                }
+
+                
             }
+                toolStripComboBox1.SelectedIndex = 0;
+                dtpOrder = new DateTimePicker();                //datetimepicker wird erzeugt
+                dtpOrder.Format = DateTimePickerFormat.Short;
+                dtpOrder.Visible = false;
+                dtpOrder.Width = 100;
+                dataGridView1.Controls.Add(dtpOrder);
 
-            gridViewColoring();
-
-            toolStripComboBox1.SelectedIndex = 0;
-            dtpOrder = new DateTimePicker();
-            dtpOrder.Format = DateTimePickerFormat.Short;
-            dtpOrder.Visible = false;
-            dtpOrder.Width = 100;
-            dataGridView1.Controls.Add(dtpOrder);
-
-            dtpOrder.ValueChanged += this.dtpOrder_ValueChanged;
-            dataGridView1.CellBeginEdit += this.dataGridView1_CellBeginEdit;
-            dataGridView1.CellEndEdit += this.dataGridView1_CellEndEdit;
+                dtpOrder.ValueChanged += this.dtpOrder_ValueChanged;
+                dataGridView1.CellBeginEdit += this.dataGridView1_CellBeginEdit;
+                dataGridView1.CellEndEdit += this.dataGridView1_CellEndEdit;
 
 
+
+              
+
+                    
+                
         }
+        /// <summary>
+        /// In Tabelle "Ablaufdatum MHD" wird ein Wert fest abgelegt
+        /// Die Datum in MHD wird in string konvertiert in string
+        /// Datum wird vergleichen mit heutigen Datum mit datum von Ablaufsdatum
+        /// es werden bedingung überprüft wenn es erfolgt wird die beide Spalte mit eine markiert
+        /// </summary>
         private void gridViewColoring()
         {
             foreach (DataGridViewRow dr in dataGridView1.Rows)
@@ -137,18 +190,48 @@ namespace Kühlschrankwächter                        //Name der Funktion ist "K
                 }
             }
         }
-
+        /// <summary>
+        /// neue Tabelle wird hinzugefügt 
+        /// daten wird als xml datei format gespeichert
+        /// wenn sie speichert speichert es als xml und sie geben den dateiname und wird gespeichert
+        /// Messegebox wird angezeigt Daten werden gespeichert.
+        /// <hier werden colour methode und getproductslist geholt>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonSave_Click(object sender, EventArgs e)
         {
-            ShowAllEntries();
             DataTable dT = GetDataTableFromDGV(dataGridView1);
             DataSet dS = new DataSet();
             dS.Tables.Add(dT);
-            File.Delete("fridgeitems.xml");
+            //File.Delete("fridgeitems.xml");
 
-            dS.WriteXml(File.OpenWrite("fridgeitems.xml"));
-            MessageBox.Show("Daten gespeichert.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            gridViewColoring();
+            SaveFileDialog savefridgedialog = new SaveFileDialog();
+            savefridgedialog.Filter = "XML files (*.xml)|*.xml";
+            DialogResult savedialogresult = savefridgedialog.ShowDialog();
+            if (savedialogresult == DialogResult.OK)
+            {
+                try
+                {
+                    savefilepath = savefridgedialog.FileName;
+                    FileStream stream = new FileStream(savefilepath, FileMode.Create, FileAccess.ReadWrite);
+                    dS.WriteXml(stream);
+                    stream.Close();
+
+                    MessageBox.Show("Daten gespeichert.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    Clear_all();
+                    ReadXML(savefilepath);
+                    GetProductsList();
+                    gridViewColoring();
+               
+                
+                }
+                catch (Exception)
+                {
+                    
+                   throw;
+                }  
+                   
+            }
         }
 
         private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
@@ -157,12 +240,14 @@ namespace Kühlschrankwächter                        //Name der Funktion ist "K
 
         }
 
-
+        /// <summary>
+        /// Hier wird ein andere Methode aufgerufen
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             gridViewColoring();
-            
-
 
         }
 
@@ -170,7 +255,11 @@ namespace Kühlschrankwächter                        //Name der Funktion ist "K
         {
 
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void dataGridView1_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
             try
@@ -232,11 +321,16 @@ namespace Kühlschrankwächter                        //Name der Funktion ist "K
         {
             e.Cancel = true;
         }
+        /// <summary>
+        /// Wenn Sie auf Schließen klicken fragt er den Benutzer ob sie schleißen wollen. Wenn sie auf nein klicken bricht das Programm ab und wenn Sie auf ja klicken schleißen das Programm
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             base.OnFormClosing(e);
 
-            if (e.CloseReason == CloseReason.WindowsShutDown) return;
+            if (e.CloseReason == CloseReason.WindowsShutDown)
+                return;
 
             switch (MessageBox.Show(this, "Soll das Fenster geschlossen werden?", "Schließen", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
             {
@@ -254,7 +348,11 @@ namespace Kühlschrankwächter                        //Name der Funktion ist "K
 
 
         }
-
+        /// <summary>
+        /// Zuerst legt er in Ablaufsdatum ein Wert fest. Und es konviert den Wert in string.Es wird Wert von Ablaufsdatum mit heutigen Datum vergleichen.
+        /// Wenn diese Bedingung überprüft wird.Legen Sie die Anfangsposition des Steuerelements.
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void toolStripComboBox1_Click(object sender, EventArgs e)
         {
             string date;
@@ -279,7 +377,7 @@ namespace Kühlschrankwächter                        //Name der Funktion ist "K
                                 DateTime datetime = DateTime.Parse(dr.Cells["Ablaufdatum (MHD)"].Value.ToString());
                                 int result = DateTime.Compare(datetime, DateTime.Now);
                                 int daysdifference = (datetime - DateTime.Now).Days;
-                                if (daysdifference < 7)
+                                if (daysdifference <= 7)
                                 {
                                     CurrencyManager currencyManager1 = (CurrencyManager)dataGridView1.BindingContext[dataGridView1.DataSource];
 
@@ -328,7 +426,7 @@ namespace Kühlschrankwächter                        //Name der Funktion ist "K
                                 DateTime datetime = DateTime.Parse(dr.Cells["Ablaufdatum (MHD)"].Value.ToString());
                                 int result = DateTime.Compare(datetime, DateTime.Now);
                                 int daysdifference = (datetime - DateTime.Now).Days;
-                                if (daysdifference >= 3 || daysdifference < 0)
+                                if (daysdifference >= 3 || daysdifference <= 0)
                                 {
                                     CurrencyManager currencyManager1 = (CurrencyManager)dataGridView1.BindingContext[dataGridView1.DataSource];
 
@@ -373,7 +471,9 @@ namespace Kühlschrankwächter                        //Name der Funktion ist "K
                     break;
             }
         }
-
+        /// <summary>
+        /// legt ein Wert in Ablaufsdatum und konviert den wert in string format
+        /// </summary>
         private void ShowAllEntries()
         {
             foreach (DataGridViewRow dr in dataGridView1.Rows)
@@ -386,7 +486,11 @@ namespace Kühlschrankwächter                        //Name der Funktion ist "K
                 }
             }
         }
-
+        /// <summary>
+        /// Methode wird andere methoden aufgerufen. In textbox geben sie text ein. Es sucht eingeben Produkt in datagridview in spalte "Name". Es erkennt auch groß und kleinschreiben. Klein und großschreibung wird in if anweisung überprüft
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void toolStripTextBoxSuchen_Click(object sender, EventArgs e)
         {
             ShowAllEntries();
@@ -418,10 +522,10 @@ namespace Kühlschrankwächter                        //Name der Funktion ist "K
 
         private void sendEmailToUser()
         {
-            //MailMessage mail = new MailMessage();
-            //SmtpClient SmtpServer = new SmtpClient("smtp.live.com");
+            MailMessage mail = new MailMessage();
+            SmtpClient SmtpServer = new SmtpClient("smtp.live.com");
 
-            //mail.From = new MailAddress("murtaza.s@hotmail.de");
+            mail.From = new MailAddress("murtaza.s@hotmail.de");
             //mail.To.Add("to_adresse");
             //mail.Subject = "Test Mail";
             //mail.Body = "This is for testing SMTP mail from GMAIL";
@@ -433,9 +537,152 @@ namespace Kühlschrankwächter                        //Name der Funktion ist "K
             //SmtpServer.Send(mail);
             //MessageBox.Show("mail Send");
         }
+        /// <summary>
+        /// hier wird ein Website(ein Link) zugeweisen und startet mit ein standardbroswer
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void buttonSearchreci_Click(object sender, EventArgs e)
+        {
+            Process.Start("http://www.chefkoch.de/rs/s0/" + "banane" + "/Rezepte.html");
+        }
+
+        private List<String> GetProductsList()
+        {
+            List<String> productsList = new List<String>();
+            foreach (DataGridViewRow dr in dataGridView1.Rows)
+            {
+                object cellvalue = dr.Cells["Name"].Value;
+                int cell = Convert.ToString(cellvalue).Length;
+                string cellText = Convert.ToString(cellvalue);
+
+                if (cell > 0)
+                {
+                    productsList.Add(cellText);
+                    checkedListBoxProducts.Items.Add(cellText);
+                }
+            }
+            return productsList;
+        }
+        /// <summary>
+        /// Es wird Wert von Datagridview in checkbox hinzugefügt. Wenn sie wert auswählen und öffnet sich in ein link und such ausgewählte produkte in checkbox  
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void buttonSearchreci_Click_1(object sender, EventArgs e)
+        {
+            List<String> selected = new List<String>();
+            foreach (string item in checkedListBoxProducts.CheckedItems)
+                selected.Add(item);
+            string productnames = string.Join(" ", selected);
+            if (checkedListBoxProducts.SelectedItem != null)            //wählt produkt in Checkbox und startet in ein browser den ausgewählte produkt
+            {
+
+                Process.Start("http://www.chefkoch.de/rs/s0/" + productnames + "/Rezepte.html");        
+            }
+            else
+                MessageBox.Show("Bitte wählen Sie ein Produkt aus.", "Info für die Rezept Suche", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void kühlschrankÖffnenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFridge(this);
+        }
+        /// <summary>
+        /// daten wird als xml format gespeichert
+        /// List wird erzeugt und datum wird vergleichen mit heutigen und ausgewählten datum.
+        /// Dann überprüft die if anweisung und es wird value von zelle in Messagebox ausgeben
+        /// Weiter nutzen wir string.Join auf einer Liste von Zeichenketten . Dies ist hilfreich, wenn wir brauchen, um mehrere Zeichenfolgen in eine durch Kommas getrennte Zeichenfolge zu verwandeln.
+        /// In Messegebox wird gezeigt welche Produkte abgelaufen sind
+        private void OpenFridge(Form fridgeform)
+        {
+            OpenFileDialog fridgefiledialog = new OpenFileDialog();
+            DialogResult opendialogresult = fridgefiledialog.ShowDialog();
+            fridgefiledialog.Filter = "XML files (*.xml)|*.xml";
+            if (opendialogresult == DialogResult.OK) // Test result.
+            {
+                 openfilepath = fridgefiledialog.FileName;
+                 try
+                 {
+                     Clear_all();
+                     ReadXML(openfilepath);
+                     gridViewColoring();
+                     GetProductsList();
+                     List<String> expiredproducts = new List<String>();
+
+                     foreach (DataGridViewRow dr in dataGridView1.Rows)
+                     {
+                         object cellvalue = dr.Cells["Name"].Value;
+                         int cell = Convert.ToString(cellvalue).Length;
+                         if (cell > 0)
+                         {
+                             DateTime datetime = DateTime.Parse(dr.Cells["Ablaufdatum (MHD)"].Value.ToString());
+                             int result = DateTime.Compare(datetime, DateTime.Now);
+                             int daysdifference = (datetime - DateTime.Now).Days;
+                             if (result > 0 && daysdifference < 3 && daysdifference >= 0)
+                             //if (daysdifference <3 || daysdifference <0)
+                             {
+                                 expiredproducts.Add(cellvalue.ToString());        //Gibt eine Zeichenfolge zurück, die das aktuelle Objekt darstellt. 
+ 
+                             }
+                                
+                         }
+                     }
+                     string productnames = string.Join(", ", expiredproducts);
+                          MessageBox.Show("Folgende Produkte sind abgelaufen: " + productnames, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                 }
+                 catch (IOException)
+                 {
+                 }
+            }
+        }
+        /// <summary>
+        /// hier wird ein neue Form geöffnet
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void neuerKühlschrankToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            VirtualFridge newfridge = new VirtualFridge();
+            Form newform = new Form();
+            newfridge.Show(this);
+        }
+        /// <summary>
+        /// hier wird neue Form geöffnet wenn Sie auf Hilfe-Übervirtualfridge klicken.Öffnen sich ein neue Fenster Über VirtualFridge
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void überVirtualFridgeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            infoWindow = new Über_VirtualFridge();
+            infoWindow.Show();
+        }
+        /// <summary>
+        /// hier wird neue Form geöffnet wenn Sie auf Hilfe-Farbcodierung klicken.Öffnen sich ein neue Fenster Farbcodierung
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void farbcodierungToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ColourWindow = new Farbcodierung();
+            ColourWindow.Show();
+        }
+
+        private void checkedListBoxProducts_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+        /// <summary>
+        /// hier wird neue Form geöffnet wenn Sie auf Hilfe-Rezepte suchen klicken.Öffnen sich ein neue Fenster Über Rezepte suchen
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void rezepteSuchenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Rezeptwindow = new Rezept();
+            Rezeptwindow.Show();
+        }
+        
 
     }
 }
-
-
-
